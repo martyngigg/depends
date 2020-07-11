@@ -26,6 +26,6 @@ jobs:
         with:
           cmakeGenerator: 'Ninja'
           cmakeBuildType: 'Release'
-          cmakeAppendedArgs: '-DBUILD_SHARED_LIBS=ON'
+          cmakeToolchainPath: '${{ github.workspace }}/.github/workflows/toolchain.cmake'
           buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/build'
