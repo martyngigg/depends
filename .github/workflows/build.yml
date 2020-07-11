@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test
 
 on:
   push:
@@ -7,30 +7,25 @@ on:
     branches: [ main ]
 
 jobs:
-
-  build:
-    runs-on: ${{ matrix.config.os }}
+  job:
+    name: ${{ matrix.os }}-hosted-basic
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        config:
-          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
-          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
+        os: [ubuntu-latest]
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          # ninja version to download. Default: 1.10.0
-          version: 1.10.0
+      - uses: lukka/get-cmake@latest
 
-      - name: Build with CMake
-        uses: ashutoshvarma/action-cmake-build@master
+      - name: Run CMake
+        uses: lukka/run-cmake@v2
+        id: runcmake
         with:
-          build-dir: ${{ runner.workspace }}/build
-          cc: ${{ matrix.config.cc }}
-          cxx: ${{ matrix.config.cxx }}
-          configure-options: -G Ninja -DBUILD_SHARED_LIBS=ON
-          build-type: Release
+          cmakeGenerator: 'Ninja'
+          cmakeBuildType: 'Release'
+          cmakeAppendedArgs: '-DBUILD_SHARED_LIBS=ON'
+          buildWithCMakeArgs: '-- -v'
+          buildDirectory: '${{ runner.workspace }}/build'
